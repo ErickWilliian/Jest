@@ -148,3 +148,76 @@ describe("teste",()=>{
 })
 
 ```
+## Testes Automatizados
+- De certa forma vamos simular um botão sendo clicado
+
+
+
+```js
+// Componente 1
+function Greeting(props){
+  return <h1>{props.text}</h1>
+}
+
+function GreetingContainer(){
+  const [greetingText,setGreetingText] = useState("Hello World")
+
+  function handleButtonClick(){
+    setGreetingText("Text changed !")
+  }
+  return (
+    <div>
+      <Greeting text={greetingText}>
+
+      <button onClick={handleButtonClick}>Change Text</button>
+    </div>
+  )
+}
+
+```
+```js
+
+describe("GreetingContainer component",()=>{
+  it('changes Greeting text on button click', ()=>{
+    // Aqui eu estou renderizando o compoenente inteiro e pegando uma função especifica dele
+    // Que é o getByText
+    const { getByText } = render(<GreetingCointainer />)
+
+    // Essa função serve para procurar um elemento dentro do componente com o texto escolhido
+    const buttonElement = getByText('Change Text')
+
+    //Ai então eu disparo um evento de click
+    fireEvent.click(buttonElement)
+
+    // Aqui eu procuro algo que tenha essa string
+    // lembra da função no segundo compoenente?
+    // que se eu clicasse ele ia trocar o texto para 'Text changed !'
+    // então ele vai procurar caso ele n ache ele retorna NULL
+    const  updateGreetingElement = getByText('Text changed !')
+
+    // o expect é uma função que testa o que ta dentro dos parenteses
+    // e se ela dar erro o teste falha
+    expect(updateGreetingElement).toBeInTheDocument()
+  })
+})
+
+```
+- Outra forma de fazer esse teste:
+```js
+
+import {render, screen,fireEvent} from "@testing-library/react"
+
+describe("GreetingContainer component",()=>{
+  it('changes Greeting text on button click', ()=>{
+     render(<GreetingCointainer />)
+
+    const button = screen.getByText(/Change Text/i)
+
+    fireEvent.click(button)
+
+    screen.getByText(/Text changed !/i)
+    
+  })
+})
+
+```
